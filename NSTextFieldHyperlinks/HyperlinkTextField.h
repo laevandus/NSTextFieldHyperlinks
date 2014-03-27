@@ -28,4 +28,33 @@
 #import <Cocoa/Cocoa.h>
 
 @interface HyperlinkTextField : NSTextField
+
+/*!
+ 
+ Link color
+ 
+ */
+@property (strong) NSColor *linkColor;
+
+/*!
+ 
+ Update control substring with hyperlink to given URL
+ 
+ */
+- (void)updateSubstring:(NSString *)linktext withHyperLinkToURL:(NSURL *)linkURL;
+
+/*!
+ 
+ Update control substring with hyperlink to given URL
+ 
+ */
+- (void)replaceSubstring:(NSString *)linkKey withHyperLink:(NSString *)linktext toURL:(NSURL *)linkURL;
+
+/*!
+ 
+ Make hyperlink attributed string to given URL
+ 
+ */
+- (NSAttributedString *)hyperlink:(NSString *)linktext toURL:(NSURL *)linkURL;
+
 @end

@@ -44,6 +44,7 @@
 {
     [self setEditable:NO];
     [self setSelectable:NO];
+    _linkColor = [NSColor blueColor];
 }
 
 
@@ -150,4 +151,51 @@
     }
 }
 
+#pragma mark -
+#pragma mark Substring value updating
+
+- (void)updateSubstring:(NSString *)linktext withHyperLinkToURL:(NSURL *)linkURL
+{
+    [self replaceSubstring:linktext withHyperLink:linktext toURL:linkURL];
+}
+
+- (void)replaceSubstring:(NSString *)linkKey withHyperLink:(NSString *)linktext toURL:(NSURL *)linkURL
+{
+    
+    // get substring
+    NSString *sourceString = self.stringValue;
+    NSRange linkrange = [sourceString rangeOfString:linkKey];
+    if (linkrange.location == NSNotFound) {
+        return;
+    }
+    
+    // build the hyper link
+    NSAttributedString *hyperlinkString = [self hyperlink:linktext toURL:linkURL];
+
+    // get link prefix and suffix strings
+    NSString *linkPrefix = [sourceString substringToIndex:linkrange.location];
+    NSString *linkSuffix = [sourceString substringFromIndex:linkrange.location + linkrange.length];
+    
+    // build new attributed string containg the hyperlink
+    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:linkPrefix];
+    [attrString appendAttributedString:hyperlinkString];
+    [attrString appendAttributedString:[[NSAttributedString alloc] initWithString:linkSuffix]];
+    
+    // update the control attributed string value
+    [self setAttributedStringValue:attrString];
+}
+
+#pragma mark -
+#pragma mark Link building
+
+- (NSAttributedString *)hyperlink:(NSString *)linktext toURL:(NSURL *)linkURL
+{
+    NSMutableAttributedString *hyperlinkString = [[NSMutableAttributedString alloc] initWithString:linktext];
+    [hyperlinkString beginEditing];
+    [hyperlinkString addAttribute:NSLinkAttributeName value:linkURL range:NSMakeRange(0, [hyperlinkString length])];
+    [hyperlinkString addAttribute:NSForegroundColorAttributeName value:self.linkColor range:NSMakeRange(0, [hyperlinkString length])];
+    [hyperlinkString endEditing];
+    
+    return hyperlinkString;
+}
 @end
