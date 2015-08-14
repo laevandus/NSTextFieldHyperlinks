@@ -58,3 +58,20 @@
 - (NSAttributedString *)hyperlink:(NSString *)linktext toURL:(NSURL *)linkURL;
 
 @end
+
+@interface NSString (HyperTextField)
+- (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL linkColor:(NSColor *)linkColor;
+@end
+
+@interface NSAttributedString (HyperTextField)
+
+- (NSAttributedString *)htf_replaceSubstringWithHyperLink:(NSString *)linktext
+                                                    toURL:(NSURL *)linkURL
+                                                linkColor:(NSColor *)linkColor;
+
+- (NSAttributedString *)htf_replaceSubstring:(NSString *)linkKey
+                               withHyperLink:(NSString *)linktext
+                                       toURL:(NSURL *)linkURL
+                                   linkColor:(NSColor *)linkColor;
+@end
+

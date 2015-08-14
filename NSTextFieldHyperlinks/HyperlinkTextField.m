@@ -161,7 +161,6 @@
 
 - (void)replaceSubstring:(NSString *)linkKey withHyperLink:(NSString *)linktext toURL:(NSURL *)linkURL
 {
-    
     // get substring
     NSString *sourceString = self.stringValue;
     NSRange linkrange = [sourceString rangeOfString:linkKey];
@@ -169,17 +168,10 @@
         return;
     }
     
-    // build the hyper link
-    NSAttributedString *hyperlinkString = [self hyperlink:linktext toURL:linkURL];
-
-    // get link prefix and suffix strings
-    NSString *linkPrefix = [sourceString substringToIndex:linkrange.location];
-    NSString *linkSuffix = [sourceString substringFromIndex:linkrange.location + linkrange.length];
     
     // build new attributed string containg the hyperlink
-    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:linkPrefix];
-    [attrString appendAttributedString:hyperlinkString];
-    [attrString appendAttributedString:[[NSAttributedString alloc] initWithString:linkSuffix]];
+    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:sourceString];
+    attrString = [attrString htf_replaceSubstring:linkKey withHyperLink:linktext toURL:linkURL linkColor:self.linkColor];
     
     // update the control attributed string value
     [self setAttributedStringValue:attrString];
@@ -190,12 +182,60 @@
 
 - (NSAttributedString *)hyperlink:(NSString *)linktext toURL:(NSURL *)linkURL
 {
-    NSMutableAttributedString *hyperlinkString = [[NSMutableAttributedString alloc] initWithString:linktext];
+    NSAttributedString *hyperlinkString = [linktext htf_hyperlinkToURL:linkURL linkColor:self.linkColor];
+    
+    return hyperlinkString;
+}
+@end
+
+
+@implementation NSString (HyperTextField)
+
+- (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL linkColor:(NSColor *)linkColor
+{
+    NSMutableAttributedString *hyperlinkString = [[NSMutableAttributedString alloc] initWithString:self];
     [hyperlinkString beginEditing];
     [hyperlinkString addAttribute:NSLinkAttributeName value:linkURL range:NSMakeRange(0, [hyperlinkString length])];
-    [hyperlinkString addAttribute:NSForegroundColorAttributeName value:self.linkColor range:NSMakeRange(0, [hyperlinkString length])];
+    [hyperlinkString addAttribute:NSForegroundColorAttributeName value:linkColor range:NSMakeRange(0, [hyperlinkString length])];
     [hyperlinkString endEditing];
     
     return hyperlinkString;
+}
+@end
+
+@implementation NSAttributedString (HyperTextField)
+
+- (NSAttributedString *)htf_replaceSubstringWithHyperLink:(NSString *)linktext
+                                                    toURL:(NSURL *)linkURL
+                                                linkColor:(NSColor *)linkColor
+{
+    return [self htf_replaceSubstring:linktext withHyperLink:linktext toURL:linkURL linkColor:linkColor];
+}
+
+- (NSAttributedString *)htf_replaceSubstring:(NSString *)linkKey
+                           withHyperLink:(NSString *)linktext
+                                   toURL:(NSURL *)linkURL
+                               linkColor:(NSColor *)linkColor
+{
+    // get substring
+    NSString *sourceString = self.string;
+    NSRange linkrange = [sourceString rangeOfString:linkKey];
+    if (linkrange.location == NSNotFound) {
+        return nil;
+    }
+    
+    // build the hyper link
+    NSAttributedString *hyperlinkString = [linktext htf_hyperlinkToURL:linkURL linkColor:linkColor];
+    
+    // get link prefix and suffix strings
+    NSString *linkPrefix = [sourceString substringToIndex:linkrange.location];
+    NSString *linkSuffix = [sourceString substringFromIndex:linkrange.location + linkrange.length];
+    
+    // build new attributed string containg the hyperlink
+    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:linkPrefix];
+    [attrString appendAttributedString:hyperlinkString];
+    [attrString appendAttributedString:[[NSAttributedString alloc] initWithString:linkSuffix]];
+    
+    return attrString;
 }
 @end
