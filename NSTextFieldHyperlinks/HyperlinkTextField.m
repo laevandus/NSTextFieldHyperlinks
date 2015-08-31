@@ -223,18 +223,19 @@
     if (linkrange.location == NSNotFound) {
         return nil;
     }
+    CGFloat linkEndLocation = linkrange.location + linkrange.length;
     
     // build the hyper link
     NSAttributedString *hyperlinkString = [linktext htf_hyperlinkToURL:linkURL linkColor:linkColor];
     
     // get link prefix and suffix strings
-    NSString *linkPrefix = [sourceString substringToIndex:linkrange.location];
-    NSString *linkSuffix = [sourceString substringFromIndex:linkrange.location + linkrange.length];
+    NSAttributedString *linkPrefix = [self attributedSubstringFromRange:NSMakeRange(0, linkrange.location)];
+    NSAttributedString *linkSuffix = [self attributedSubstringFromRange:NSMakeRange(linkEndLocation, sourceString.length - linkEndLocation)];
     
     // build new attributed string containg the hyperlink
-    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:linkPrefix];
+    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithAttributedString:linkPrefix];
     [attrString appendAttributedString:hyperlinkString];
-    [attrString appendAttributedString:[[NSAttributedString alloc] initWithString:linkSuffix]];
+    [attrString appendAttributedString:linkSuffix];
     
     return attrString;
 }
