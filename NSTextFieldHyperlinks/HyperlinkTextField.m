@@ -221,7 +221,7 @@
     NSString *sourceString = self.string;
     NSRange linkrange = [sourceString rangeOfString:linkKey];
     if (linkrange.location == NSNotFound) {
-        return nil;
+        return self;
     }
     CGFloat linkEndLocation = linkrange.location + linkrange.length;
     
