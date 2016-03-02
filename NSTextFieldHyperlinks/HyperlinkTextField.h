@@ -27,6 +27,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+// link option keys
+extern NSString * HTLinkOption;
+extern NSString * HTUrlOption;
+extern NSString * HTColorOption;
+
 @interface HyperlinkTextField : NSTextField
 
 /*!
@@ -35,6 +40,13 @@
  
  */
 @property (strong) NSColor *linkColor;
+
+/*!
+ 
+ Set control string with link options to define hyperlink.
+ 
+ */
+- (void)setStringValue:(NSString *)stringValue linkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options;
 
 /*!
  

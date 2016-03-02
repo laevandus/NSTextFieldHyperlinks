@@ -25,6 +25,10 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
+NSString * HTLinkOption = @"link";
+NSString * HTUrlOption = @"url";
+NSString * HTColorOption = @"color";
+
 #import "HyperlinkTextField.h"
 
 @interface HyperlinkTextField ()
@@ -186,6 +190,19 @@
     
     return hyperlinkString;
 }
+
+- (void)setStringValue:(nonnull NSString *)stringValue linkOptions:(nonnull NSArray <NSDictionary <NSString *, NSObject *> *>*)options
+{
+    NSAttributedString *hyperlinkText = [[NSAttributedString alloc] initWithString:stringValue];
+    for (NSDictionary *option in options) {
+        hyperlinkText = [hyperlinkText htf_replaceSubstringWithHyperLink:option[HTLinkOption]
+                                                                   toURL:option[HTUrlOption]
+                                                               linkColor:option[HTColorOption]];
+    }
+    
+    self.attributedStringValue = hyperlinkText;
+}
+
 @end
 
 
