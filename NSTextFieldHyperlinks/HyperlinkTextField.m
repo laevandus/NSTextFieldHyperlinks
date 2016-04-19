@@ -210,6 +210,9 @@ NSString * HTColorOption = @"color";
 
 - (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL linkColor:(NSColor *)linkColor
 {
+    // contract
+    NSAssert([linkURL isKindOfClass:[NSURL class]], @"invalid class");
+    
     NSMutableAttributedString *hyperlinkString = [[NSMutableAttributedString alloc] initWithString:self];
     [hyperlinkString beginEditing];
     [hyperlinkString addAttribute:NSLinkAttributeName value:linkURL range:NSMakeRange(0, [hyperlinkString length])];
