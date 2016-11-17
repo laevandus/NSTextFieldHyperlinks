@@ -31,6 +31,8 @@ NSString * HTColorOption = @"color";
 
 #import "HyperlinkTextField.h"
 
+static BOOL m_useNativeHyperlinkImplementation = YES;
+
 @interface HyperlinkTextField ()
 @property (nonatomic, readonly) NSArray *hyperlinkInfos;
 @property (nonatomic, readonly) NSTextView *textView;
@@ -44,18 +46,43 @@ NSString * HTColorOption = @"color";
 
 @implementation HyperlinkTextField
 
+/*
+ 
+ The non native implementation attempts to improve on the native implementation.
+ 
+ The main failing of the default implementation is that it uses the selection cursor (the hand cursor appears if the field is selected).
+ 
+ The non native implementation works tolerably well in some cases but can fail to compute the correct link cursor rect for longer strings.
+ 
+ TODO: in order to improve on the non native performance we could display -textView in a popup window nad look for layout issues.
+ 
+ */
++ (void)setUseNativeHyperlinkImplementation:(BOOL)value
+{
+    m_useNativeHyperlinkImplementation = value;
+}
+
++ (BOOL)useNativeHyperlinkImplementation
+{
+    return m_useNativeHyperlinkImplementation;
+}
+
 - (void)_hyperlinkTextFieldInit
 {
     [self setEditable:NO];
-    [self setSelectable:NO];
     _linkColor = [NSColor blueColor];
+    
+    if (m_useNativeHyperlinkImplementation) {
+        // An NSTextView based implementation might give a better result but would require a good deal of refactoring.
+        // see https://developer.apple.com/library/content/qa/qa1487/_index.html
+        [self setAllowsEditingTextAttributes: YES];
+        [self setSelectable: YES];
+    }
 }
-
 
 - (id)initWithFrame:(NSRect)frame
 {
-    if ((self = [super initWithFrame:frame]))
-    {
+    if ((self = [super initWithFrame:frame])) {
         [self _hyperlinkTextFieldInit];
     }
     
@@ -65,8 +92,7 @@ NSString * HTColorOption = @"color";
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-    if ((self = [super initWithCoder:coder]))
-    {
+    if ((self = [super initWithCoder:coder])) {
         [self _hyperlinkTextFieldInit];
     }
     
@@ -77,14 +103,15 @@ NSString * HTColorOption = @"color";
 - (void)resetCursorRects
 {
     [super resetCursorRects];
-    [self _resetHyperlinkCursorRects];
+    if (!m_useNativeHyperlinkImplementation) {
+        [self _resetHyperlinkCursorRects];
+    }
 }
 
 
 - (void)_resetHyperlinkCursorRects
 {
-    for (NSDictionary *info in self.hyperlinkInfos)
-    {
+    for (NSDictionary *info in self.hyperlinkInfos) {
         [self addCursorRect:[[info objectForKey:kHyperlinkInfoRectKey] rectValue] cursor:[NSCursor pointingHandCursor]];
     }
 }
@@ -102,6 +129,7 @@ NSString * HTColorOption = @"color";
     {
         if (value)
         {
+            [textView.layoutManager ensureLayoutForTextContainer:textView.textContainer];
             NSUInteger rectCount = 0;
             NSRectArray rectArray = [textView.layoutManager rectArrayForCharacterRange:range withinSelectedCharacterRange:range inTextContainer:textView.textContainer rectCount:&rectCount];
             for (NSUInteger i = 0; i < rectCount; i++)
@@ -121,8 +149,9 @@ NSString * HTColorOption = @"color";
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedStringValue];
     NSFont *font = [attributedString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
     
-    if (!font)
+    if (!font) {
         [attributedString addAttribute:NSFontAttributeName value:self.font range:NSMakeRange(0, [attributedString length])];
+    }
     
     NSRect textViewFrame = [self.cell titleRectForBounds:self.bounds];
     NSTextView *textView = [[NSTextView alloc] initWithFrame:textViewFrame];
@@ -137,6 +166,11 @@ NSString * HTColorOption = @"color";
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
+    if (m_useNativeHyperlinkImplementation) {
+        [super mouseUp:theEvent];
+        return;
+    }
+    
     NSTextView *textView = self.textView;
     NSPoint localPoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     NSUInteger index = [textView.layoutManager characterIndexForPoint:localPoint inTextContainer:textView.textContainer fractionOfDistanceBetweenInsertionPoints:NULL];
@@ -172,9 +206,10 @@ NSString * HTColorOption = @"color";
         return;
     }
     
+    NSFont *font = self.font;
     
     // build new attributed string containg the hyperlink
-    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:sourceString];
+    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:sourceString attributes:@{NSFontAttributeName : font}];
     attrString = [attrString htf_replaceSubstring:linkKey withHyperLink:linktext toURL:linkURL linkColor:self.linkColor];
     
     // update the control attributed string value
@@ -210,6 +245,8 @@ NSString * HTColorOption = @"color";
 
 - (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL linkColor:(NSColor *)linkColor
 {
+    NSFont *font = [NSFont controlContentFontOfSize:[NSFont systemFontSize]];
+    
     // contract
     NSAssert([linkURL isKindOfClass:[NSURL class]], @"invalid class");
     
@@ -217,6 +254,7 @@ NSString * HTColorOption = @"color";
     [hyperlinkString beginEditing];
     [hyperlinkString addAttribute:NSLinkAttributeName value:linkURL range:NSMakeRange(0, [hyperlinkString length])];
     [hyperlinkString addAttribute:NSForegroundColorAttributeName value:linkColor range:NSMakeRange(0, [hyperlinkString length])];
+    [hyperlinkString addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, [hyperlinkString length])];
     [hyperlinkString endEditing];
     
     return hyperlinkString;
@@ -252,7 +290,7 @@ NSString * HTColorOption = @"color";
     NSAttributedString *linkPrefix = [self attributedSubstringFromRange:NSMakeRange(0, linkrange.location)];
     NSAttributedString *linkSuffix = [self attributedSubstringFromRange:NSMakeRange(linkEndLocation, sourceString.length - linkEndLocation)];
     
-    // build new attributed string containg the hyperlink
+    // build new attributed string containing the hyperlink
     NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithAttributedString:linkPrefix];
     [attrString appendAttributedString:hyperlinkString];
     [attrString appendAttributedString:linkSuffix];
