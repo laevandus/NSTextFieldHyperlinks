@@ -54,7 +54,8 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
  
  The non native implementation works tolerably well in some cases but can fail to compute the correct link cursor rect for longer strings.
  
- TODO: in order to improve on the non native performance we could display -textView in a popup window nad look for layout issues.
+ TODO: in order to improve on the non native performance we could display -textView in a popup window and look for layout issues. I tried various
+ methods of overriding the current cursor but none were flicker free.
  
  */
 + (void)setUseNativeHyperlinkImplementation:(BOOL)value
@@ -108,10 +109,10 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     }
 }
 
-
 - (void)_resetHyperlinkCursorRects
 {
     for (NSDictionary *info in self.hyperlinkInfos) {
+        // TODO: use tracking areas instead
         [self addCursorRect:[[info objectForKey:kHyperlinkInfoRectKey] rectValue] cursor:[NSCursor pointingHandCursor]];
     }
 }
