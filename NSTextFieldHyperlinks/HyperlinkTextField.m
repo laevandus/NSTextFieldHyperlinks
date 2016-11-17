@@ -161,6 +161,17 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     return textView;
 }
 
+- (void)setAttributedStringValue:(NSAttributedString *)attributedString
+{
+    NSFont *font = [attributedString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
+    
+    if (!font) {
+        NSMutableAttributedString *s = [attributedString mutableCopy];
+        [s addAttribute:NSFontAttributeName value:self.font range:NSMakeRange(0, [attributedString length])];
+        attributedString = s;
+    }
+    [super setAttributedStringValue:attributedString];
+}
 
 #pragma mark -
 #pragma mark Mouse Events
