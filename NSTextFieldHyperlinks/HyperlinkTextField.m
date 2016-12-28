@@ -238,15 +238,26 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     return hyperlinkString;
 }
 
-- (void)setStringValue:(nonnull NSString *)stringValue linkOptions:(nonnull NSArray <NSDictionary <NSString *, NSObject *> *>*)options
+- (void)updateAttributedStringValueWithLinkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options
 {
-    NSAttributedString *hyperlinkText = [[NSAttributedString alloc] initWithString:stringValue];
+    NSAttributedString *hyperlinkText = self.attributedStringValue;
     for (NSDictionary *option in options) {
         hyperlinkText = [hyperlinkText htf_replaceSubstringWithHyperLink:option[HTLinkOption]
                                                                    toURL:option[HTUrlOption]
                                                                linkColor:option[HTColorOption]];
     }
-    
+    self.attributedStringValue = hyperlinkText;
+}
+
+- (void)setStringValue:(nonnull NSString *)stringValue linkOptions:(nonnull NSArray <NSDictionary <NSString *, NSObject *> *>*)options
+{
+    NSFont *font = [NSFont controlContentFontOfSize:[NSFont systemFontSize]];
+    NSAttributedString *hyperlinkText = [[NSAttributedString alloc] initWithString:stringValue attributes:@{NSFontAttributeName : font}];
+    for (NSDictionary *option in options) {
+        hyperlinkText = [hyperlinkText htf_replaceSubstringWithHyperLink:option[HTLinkOption]
+                                                                   toURL:option[HTUrlOption]
+                                                               linkColor:option[HTColorOption]];
+    }
     self.attributedStringValue = hyperlinkText;
 }
 

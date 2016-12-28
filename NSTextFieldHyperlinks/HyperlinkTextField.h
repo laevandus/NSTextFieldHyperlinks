@@ -43,6 +43,13 @@ extern NSString * HTColorOption;
 
 /*!
  
+ Update control attributed string with link options to define hyperlink.
+ 
+ */
+- (void)updateAttributedStringValueWithLinkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options;
+
+/*!
+ 
  Set control string with link options to define hyperlink.
  
  */
