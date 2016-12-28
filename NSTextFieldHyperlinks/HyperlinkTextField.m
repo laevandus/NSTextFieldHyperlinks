@@ -143,7 +143,6 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     return [hyperlinkInfos count] ? hyperlinkInfos : nil;
 }
 
-
 - (NSTextView *)textView
 {
     // Font used for displaying and frame calculations must match
@@ -171,6 +170,36 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
         attributedString = s;
     }
     [super setAttributedStringValue:attributedString];
+}
+
+- (void)setStringValue:(NSString *)stringValue
+{
+    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:stringValue attributes:@{NSFontAttributeName : self.font}];
+    
+    [super setAttributedStringValue:attrString];
+}
+
+- (void)setObjectValue:(id)objectValue
+{
+    // when binding and using the native implementation the text rendering changes if the text is clicked and
+    // the attributed text does not have a font attribute defined. hence we enforce this.
+    if ([objectValue isKindOfClass:[NSString class]]) {
+        objectValue = [[NSAttributedString alloc] initWithString:objectValue attributes:@{NSFontAttributeName : self.font}];
+    }
+    else if ([objectValue isKindOfClass:[NSAttributedString class]]) {
+        NSAttributedString *attrString = objectValue;
+        if (attrString.length > 0) {
+            NSFont *existingFont = [attrString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
+            
+            if (!existingFont) {
+                NSMutableAttributedString *s = [attrString mutableCopy];
+                [s addAttribute:NSFontAttributeName value:self.font range:NSMakeRange(0, [attrString length])];
+                objectValue = s;
+            }
+        }
+    }
+    
+    [super setObjectValue:objectValue];
 }
 
 #pragma mark -
@@ -251,8 +280,7 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
 
 - (void)setStringValue:(nonnull NSString *)stringValue linkOptions:(nonnull NSArray <NSDictionary <NSString *, NSObject *> *>*)options
 {
-    NSFont *font = [NSFont controlContentFontOfSize:[NSFont systemFontSize]];
-    NSAttributedString *hyperlinkText = [[NSAttributedString alloc] initWithString:stringValue attributes:@{NSFontAttributeName : font}];
+    NSAttributedString *hyperlinkText = [[NSAttributedString alloc] initWithString:stringValue attributes:@{NSFontAttributeName : self.font}];
     for (NSDictionary *option in options) {
         hyperlinkText = [hyperlinkText htf_replaceSubstringWithHyperLink:option[HTLinkOption]
                                                                    toURL:option[HTUrlOption]
