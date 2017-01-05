@@ -306,6 +306,7 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     [hyperlinkString addAttribute:NSLinkAttributeName value:linkURL range:NSMakeRange(0, [hyperlinkString length])];
     [hyperlinkString addAttribute:NSForegroundColorAttributeName value:linkColor range:NSMakeRange(0, [hyperlinkString length])];
     [hyperlinkString addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, [hyperlinkString length])];
+    [hyperlinkString addAttribute:NSUnderlineStyleAttributeName value:@(NSUnderlineStyleNone) range:NSMakeRange(0, [hyperlinkString length])];
     [hyperlinkString endEditing];
     
     return hyperlinkString;
