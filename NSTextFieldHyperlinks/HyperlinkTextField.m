@@ -57,6 +57,11 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
  TODO: in order to improve on the non native performance we could display -textView in a popup window and look for layout issues. I tried various
  methods of overriding the current cursor but none were flicker free.
  
+ on 10.12 the default link style is enforced
+ http://stackoverflow.com/questions/39926951/color-attribute-is-ignored-in-nsattributedstring-with-nslinkattributename
+ 
+ A proper solution involves using an NSTextView subclass as oppposed to NSTextField.
+ 
  */
 + (void)setUseNativeHyperlinkImplementation:(BOOL)value
 {
