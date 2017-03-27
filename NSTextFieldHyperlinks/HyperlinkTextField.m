@@ -283,14 +283,10 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     self.attributedStringValue = hyperlinkText;
 }
 
-- (void)setStringValue:(nonnull NSString *)stringValue linkOptions:(nonnull NSArray <NSDictionary <NSString *, NSObject *> *>*)options
+- (void)setStringValue:(NSString *)stringValue linkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options
 {
-    NSAttributedString *hyperlinkText = [[NSAttributedString alloc] initWithString:stringValue attributes:@{NSFontAttributeName : self.font}];
-    for (NSDictionary *option in options) {
-        hyperlinkText = [hyperlinkText htf_replaceSubstringWithHyperLink:option[HTLinkOption]
-                                                                   toURL:option[HTUrlOption]
-                                                               linkColor:option[HTColorOption]];
-    }
+    NSDictionary<NSString *, id> *attributes = @{NSFontAttributeName : self.font};
+    NSAttributedString *hyperlinkText = [stringValue htf_hyperlinkWithAttributes:attributes linkOptions:options];
     self.attributedStringValue = hyperlinkText;
 }
 
@@ -316,6 +312,18 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     
     return hyperlinkString;
 }
+
+- (NSAttributedString *)htf_hyperlinkWithAttributes:(NSDictionary<NSString *, id> *)attributes linkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options
+{
+    NSAttributedString *hyperlinkText = [[NSAttributedString alloc] initWithString:self attributes:attributes];
+    for (NSDictionary *option in options) {
+        hyperlinkText = [hyperlinkText htf_replaceSubstringWithHyperLink:option[HTLinkOption]
+                                                                   toURL:option[HTUrlOption]
+                                                               linkColor:option[HTColorOption]];
+    }
+    return hyperlinkText;
+}
+
 @end
 
 @implementation NSAttributedString (HyperTextField)
