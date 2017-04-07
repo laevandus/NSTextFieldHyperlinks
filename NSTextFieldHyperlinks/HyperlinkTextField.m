@@ -165,6 +165,14 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     return textView;
 }
 
+- (void)setStringValue:(NSString *)stringValue
+{
+    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:stringValue attributes:@{NSFontAttributeName : self.font}];
+    
+    [super setAttributedStringValue:attrString];
+}
+
+
 - (void)setAttributedStringValue:(NSAttributedString *)attributedString
 {
     NSFont *font = [attributedString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
@@ -177,11 +185,16 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     [super setAttributedStringValue:attributedString];
 }
 
-- (void)setStringValue:(NSString *)stringValue
+- (void)setStringValue:(NSString *)stringValue linkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options
 {
-    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:stringValue attributes:@{NSFontAttributeName : self.font}];
-    
-    [super setAttributedStringValue:attrString];
+    NSDictionary<NSString *, id> *attributes = @{NSFontAttributeName : self.font};
+    [self setStringValue:stringValue attributes:attributes linkOptions:options];
+}
+
+- (void)setStringValue:(NSString *)stringValue attributes:(NSDictionary<NSString *, id> *)attributes linkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options
+{
+    NSAttributedString *hyperlinkText = [stringValue htf_hyperlinkWithAttributes:attributes linkOptions:options];
+    self.attributedStringValue = hyperlinkText;
 }
 
 - (void)setObjectValue:(id)objectValue
@@ -262,16 +275,6 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     [self setAttributedStringValue:attrString];
 }
 
-#pragma mark -
-#pragma mark Link building
-
-- (NSAttributedString *)hyperlink:(NSString *)linktext toURL:(NSURL *)linkURL
-{
-    NSAttributedString *hyperlinkString = [linktext htf_hyperlinkToURL:linkURL linkColor:self.linkColor];
-    
-    return hyperlinkString;
-}
-
 - (void)updateAttributedStringValueWithLinkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options
 {
     NSAttributedString *hyperlinkText = self.attributedStringValue;
@@ -283,11 +286,14 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     self.attributedStringValue = hyperlinkText;
 }
 
-- (void)setStringValue:(NSString *)stringValue linkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options
+#pragma mark -
+#pragma mark Link building
+
+- (NSAttributedString *)hyperlink:(NSString *)linktext toURL:(NSURL *)linkURL
 {
-    NSDictionary<NSString *, id> *attributes = @{NSFontAttributeName : self.font};
-    NSAttributedString *hyperlinkText = [stringValue htf_hyperlinkWithAttributes:attributes linkOptions:options];
-    self.attributedStringValue = hyperlinkText;
+    NSAttributedString *hyperlinkString = [linktext htf_hyperlinkToURL:linkURL linkColor:self.linkColor];
+    
+    return hyperlinkString;
 }
 
 @end

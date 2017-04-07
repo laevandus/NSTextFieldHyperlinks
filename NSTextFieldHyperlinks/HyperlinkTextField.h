@@ -57,6 +57,13 @@ extern NSString * HTColorOption;
 
 /*!
  
+ Set control string with attributes and link options to define hyperlink.
+ 
+ */
+- (void)setStringValue:(NSString *)stringValue attributes:(NSDictionary<NSString *, id> *)attributes linkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options;
+
+/*!
+ 
  Update control substring with hyperlink to given URL
  
  */
