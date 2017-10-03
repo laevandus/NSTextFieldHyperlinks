@@ -77,6 +77,7 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
 {
     [self setEditable:NO];
     _linkColor = [NSColor blueColor];
+    _cursor = [NSCursor arrowCursor];
     
     if (m_useNativeHyperlinkImplementation) {
         // An NSTextView based implementation might give a better result but would require a good deal of refactoring.
@@ -105,12 +106,24 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     return self;
 }
 
-
 - (void)resetCursorRects
 {
     [super resetCursorRects];
     if (!m_useNativeHyperlinkImplementation) {
         [self _resetHyperlinkCursorRects];
+    }
+    else {
+        [self addCursorRect:self.bounds cursor:self.cursor];
+    }
+}
+
+- (void)addCursorRect:(NSRect)rect cursor:(NSCursor *)object
+{
+    if (!m_useNativeHyperlinkImplementation) {
+        [super addCursorRect:rect cursor:object];
+    }
+    else {
+        [super addCursorRect:rect cursor:self.cursor];
     }
 }
 
@@ -223,6 +236,17 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
 #pragma mark -
 #pragma mark Mouse Events
 
+- (void)mouseMoved:(NSEvent *)theEvent {
+    if (m_useNativeHyperlinkImplementation) {
+        // this is not a great solution as there is some cursor flickering but it is perhaps better than using the default I beam
+        if ([NSCursor currentSystemCursor] != self.cursor) {
+            [self.cursor set];
+        }
+        return;
+    }
+    [super mouseMoved:theEvent];
+}
+
 - (void)mouseUp:(NSEvent *)theEvent
 {
     if (m_useNativeHyperlinkImplementation) {
@@ -311,9 +335,12 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     NSMutableAttributedString *hyperlinkString = [[NSMutableAttributedString alloc] initWithString:self];
     [hyperlinkString beginEditing];
     [hyperlinkString addAttribute:NSLinkAttributeName value:linkURL range:NSMakeRange(0, [hyperlinkString length])];
+    
+    // can no longer change the link style
+    // see https://stackoverflow.com/questions/39926951/color-attribute-is-ignored-in-nsattributedstring-with-nslinkattributename
     [hyperlinkString addAttribute:NSForegroundColorAttributeName value:linkColor range:NSMakeRange(0, [hyperlinkString length])];
-    [hyperlinkString addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, [hyperlinkString length])];
     [hyperlinkString addAttribute:NSUnderlineStyleAttributeName value:@(NSUnderlineStyleNone) range:NSMakeRange(0, [hyperlinkString length])];
+    [hyperlinkString addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, [hyperlinkString length])];
     [hyperlinkString endEditing];
     
     return hyperlinkString;

@@ -34,6 +34,8 @@ extern NSString * HTColorOption;
 
 @interface HyperlinkTextField : NSTextField
 
+@property (strong) NSCursor *cursor;
+
 /*!
  
  Link color
