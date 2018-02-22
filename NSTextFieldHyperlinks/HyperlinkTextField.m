@@ -188,7 +188,11 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
 
 - (void)setAttributedStringValue:(NSAttributedString *)attributedString
 {
-    NSFont *font = [attributedString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
+    NSFont *font = nil;
+    
+    if (attributedString.length > 0) {
+        font = [attributedString attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
+    }
     
     if (!font) {
         NSMutableAttributedString *s = [attributedString mutableCopy];
