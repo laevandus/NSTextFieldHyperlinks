@@ -78,7 +78,7 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     [self setEditable:NO];
     _linkColor = [NSColor blueColor];
     _cursor = [NSCursor arrowCursor];
-    
+
     if (m_useNativeHyperlinkImplementation) {
         // An NSTextView based implementation might give a better result but would require a good deal of refactoring.
         // see https://developer.apple.com/library/content/qa/qa1487/_index.html
@@ -339,6 +339,11 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     NSMutableAttributedString *hyperlinkString = [[NSMutableAttributedString alloc] initWithString:self];
     [hyperlinkString beginEditing];
     [hyperlinkString addAttribute:NSLinkAttributeName value:linkURL range:NSMakeRange(0, [hyperlinkString length])];
+    
+    // in some cases we see tootltips, which may be okay.
+    // however if are using links for internal app navigation via a custom scheme then it's not so desirable.
+    // using an empty tooltip seems to banish the tool tip.
+    [hyperlinkString addAttribute:NSToolTipAttributeName value:@"" range:NSMakeRange(0, [hyperlinkString length])];
     
     // can no longer change the link style
     // see https://stackoverflow.com/questions/39926951/color-attribute-is-ignored-in-nsattributedstring-with-nslinkattributename
