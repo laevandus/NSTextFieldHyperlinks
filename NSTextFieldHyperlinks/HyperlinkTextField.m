@@ -347,7 +347,9 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     
     // can no longer change the link style
     // see https://stackoverflow.com/questions/39926951/color-attribute-is-ignored-in-nsattributedstring-with-nslinkattributename
-    [hyperlinkString addAttribute:NSForegroundColorAttributeName value:linkColor range:NSMakeRange(0, [hyperlinkString length])];
+    if (linkColor) {
+        [hyperlinkString addAttribute:NSForegroundColorAttributeName value:linkColor range:NSMakeRange(0, [hyperlinkString length])];
+    }
     [hyperlinkString addAttribute:NSUnderlineStyleAttributeName value:@(NSUnderlineStyleNone) range:NSMakeRange(0, [hyperlinkString length])];
     [hyperlinkString addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, [hyperlinkString length])];
     [hyperlinkString endEditing];
