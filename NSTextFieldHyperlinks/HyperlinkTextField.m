@@ -329,6 +329,11 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
 
 @implementation NSString (HyperTextField)
 
+- (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL
+{
+    return [self htf_hyperlinkToURL:linkURL linkColor:[NSColor blueColor]];
+}
+     
 - (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL linkColor:(NSColor *)linkColor
 {
     NSFont *font = [NSFont controlContentFontOfSize:[NSFont systemFontSize]];
@@ -371,6 +376,11 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
 @end
 
 @implementation NSAttributedString (HyperTextField)
+
+- (NSAttributedString *)htf_replaceSubstringWithHyperLink:(NSString *)linktext toURL:(NSURL *)linkURL
+{
+    [self htf_replaceSubstring:linktext withHyperLink:linktext toURL:linkURL linkColor:[NSColor blueColor]];
+}
 
 - (NSAttributedString *)htf_replaceSubstringWithHyperLink:(NSString *)linktext
                                                     toURL:(NSURL *)linkURL
