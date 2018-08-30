@@ -379,7 +379,7 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
 
 - (NSAttributedString *)htf_replaceSubstringWithHyperLink:(NSString *)linktext toURL:(NSURL *)linkURL
 {
-    [self htf_replaceSubstring:linktext withHyperLink:linktext toURL:linkURL linkColor:[NSColor blueColor]];
+    return [self htf_replaceSubstring:linktext withHyperLink:linktext toURL:linkURL linkColor:[NSColor blueColor]];
 }
 
 - (NSAttributedString *)htf_replaceSubstringWithHyperLink:(NSString *)linktext
