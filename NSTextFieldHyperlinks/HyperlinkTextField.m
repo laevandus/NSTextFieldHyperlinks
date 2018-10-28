@@ -200,6 +200,9 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
         attributedString = s;
     }
     [super setAttributedStringValue:attributedString];
+    
+    // enforcing the field init here seems to be necessary in some cases.
+    [self _hyperlinkTextFieldInit];
 }
 
 - (void)setStringValue:(NSString *)stringValue linkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options
