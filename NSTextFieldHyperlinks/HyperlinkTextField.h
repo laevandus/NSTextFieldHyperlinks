@@ -38,6 +38,13 @@ extern NSString * HTColorOption;
 
 /*!
  
+ Explicity enable and disable hyperlinks.
+ 
+ */
+@property (assign) BOOL hyperlinksEnabled;
+
+/*!
+ 
  Link color
  
  */

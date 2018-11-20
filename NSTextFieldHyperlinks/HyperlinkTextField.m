@@ -82,8 +82,7 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     if (m_useNativeHyperlinkImplementation) {
         // An NSTextView based implementation might give a better result but would require a good deal of refactoring.
         // see https://developer.apple.com/library/content/qa/qa1487/_index.html
-        [self setAllowsEditingTextAttributes: YES];
-        [self setSelectable: YES];
+        self.hyperlinksEnabled = YES;
     }
 }
 
@@ -238,6 +237,22 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     }
     
     [super setObjectValue:objectValue];
+}
+
+- (void)setSelectable:(BOOL)selectable
+{
+    [super setSelectable:selectable];
+}
+
+- (void)setHyperlinksEnabled:(BOOL)enabled
+{
+    self.allowsEditingTextAttributes = enabled;
+    self.selectable = enabled;
+}
+
+- (BOOL)hyperlinksEnabled
+{
+    return self.allowsEditingTextAttributes && self.selectable;
 }
 
 #pragma mark -
