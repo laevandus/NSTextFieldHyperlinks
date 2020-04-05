@@ -97,6 +97,7 @@ extern NSString * HTColorOption;
 @interface NSString (HyperTextField)
 - (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL;
 - (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL linkColor:(NSColor *)linkColor;
+- (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL linkColor:(NSColor *)linkColor font:(NSFont *)font;
 - (NSAttributedString *)htf_hyperlinkWithAttributes:(NSDictionary<NSString *, id> *)attributes linkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options;
 @end
 

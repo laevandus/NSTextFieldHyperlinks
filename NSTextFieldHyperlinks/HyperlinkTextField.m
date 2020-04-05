@@ -351,13 +351,20 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
 {
     return [self htf_hyperlinkToURL:linkURL linkColor:[NSColor blueColor]];
 }
-     
+
 - (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL linkColor:(NSColor *)linkColor
 {
-    NSFont *font = [NSFont controlContentFontOfSize:[NSFont systemFontSize]];
-    
+    return [self htf_hyperlinkToURL:linkURL linkColor:linkColor font:nil];
+}
+
+- (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL linkColor:(NSColor *)linkColor font:(NSFont *)font
+{
     // contract
     NSAssert([linkURL isKindOfClass:[NSURL class]], @"invalid class");
+    
+    if (!font) {
+        font = [NSFont controlContentFontOfSize:[NSFont systemFontSize]];
+    }
     
     NSMutableAttributedString *hyperlinkString = [[NSMutableAttributedString alloc] initWithString:self];
     [hyperlinkString beginEditing];
@@ -414,14 +421,20 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
 {
     // get substring
     NSString *sourceString = self.string;
+    if (!linkKey || linkKey.length == 0 ) linkKey = sourceString;
+    if (!linktext || linktext.length == 0 ) linktext = sourceString;
     NSRange linkrange = [sourceString rangeOfString:linkKey];
     if (linkrange.location == NSNotFound) {
         return self;
     }
     CGFloat linkEndLocation = linkrange.location + linkrange.length;
     
+    NSFont *font = nil;
+    id attr = [self attribute:NSFontAttributeName atIndex:linkrange.location effectiveRange:nil];
+    if ([attr isKindOfClass:NSFont.class]) font = attr;
+    
     // build the hyper link
-    NSAttributedString *hyperlinkString = [linktext htf_hyperlinkToURL:linkURL linkColor:linkColor];
+    NSAttributedString *hyperlinkString = [linktext htf_hyperlinkToURL:linkURL linkColor:linkColor font:font];
     
     // get link prefix and suffix strings
     NSAttributedString *linkPrefix = [self attributedSubstringFromRange:NSMakeRange(0, linkrange.location)];
