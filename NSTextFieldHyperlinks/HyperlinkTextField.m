@@ -313,8 +313,15 @@ static BOOL m_useNativeHyperlinkImplementation = YES;
     
     NSFont *font = self.font;
     
-    // build new attributed string containg the hyperlink
-    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:sourceString attributes:@{NSFontAttributeName : font}];
+    // get attributed string
+    NSAttributedString *attrString = nil;
+    if (!self.attributedStringValue) {
+        attrString = [[NSAttributedString alloc] initWithString:sourceString attributes:@{NSFontAttributeName : font}];
+    }
+    else {
+        attrString = self.attributedStringValue;
+    }
+    
     attrString = [attrString htf_replaceSubstring:linkKey withHyperLink:linktext toURL:linkURL linkColor:self.linkColor];
     
     // update the control attributed string value
