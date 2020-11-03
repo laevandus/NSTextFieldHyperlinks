@@ -27,5 +27,91 @@
 
 #import <Cocoa/Cocoa.h>
 
+// link option keys
+extern NSString * HTLinkOption;
+extern NSString * HTUrlOption;
+extern NSString * HTColorOption;
+
 @interface HyperlinkTextField : NSTextField
+
+@property (strong) NSCursor *cursor;
+
+/*!
+ 
+ Explicity enable and disable hyperlinks.
+ 
+ */
+@property (assign) BOOL hyperlinksEnabled;
+
+/*!
+ 
+ Link color
+ 
+ */
+@property (strong) NSColor *linkColor;
+
+/*!
+ 
+ Update control attributed string with link options to define hyperlink.
+ 
+ */
+- (void)updateAttributedStringValueWithLinkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options;
+
+/*!
+ 
+ Set control string with link options to define hyperlink.
+ 
+ */
+- (void)setStringValue:(NSString *)stringValue linkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options;
+
+/*!
+ 
+ Set control string with attributes and link options to define hyperlink.
+ 
+ */
+- (void)setStringValue:(NSString *)stringValue attributes:(NSDictionary<NSString *, id> *)attributes linkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options;
+
+/*!
+ 
+ Update control substring with hyperlink to given URL
+ 
+ */
+- (void)updateSubstring:(NSString *)linktext withHyperLinkToURL:(NSURL *)linkURL;
+
+/*!
+ 
+ Update control substring with hyperlink to given URL
+ 
+ */
+- (void)replaceSubstring:(NSString *)linkKey withHyperLink:(NSString *)linktext toURL:(NSURL *)linkURL;
+
+/*!
+ 
+ Make hyperlink attributed string to given URL
+ 
+ */
+- (NSAttributedString *)hyperlink:(NSString *)linktext toURL:(NSURL *)linkURL;
+
 @end
+
+@interface NSString (HyperTextField)
+- (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL;
+- (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL linkColor:(NSColor *)linkColor;
+- (NSAttributedString *)htf_hyperlinkToURL:(NSURL *)linkURL linkColor:(NSColor *)linkColor font:(NSFont *)font;
+- (NSAttributedString *)htf_hyperlinkWithAttributes:(NSDictionary<NSString *, id> *)attributes linkOptions:(NSArray <NSDictionary <NSString *, NSObject *> *>*)options;
+@end
+
+@interface NSAttributedString (HyperTextField)
+
+- (NSAttributedString *)htf_replaceSubstringWithHyperLink:(NSString *)linktext toURL:(NSURL *)linkURL;
+
+- (NSAttributedString *)htf_replaceSubstringWithHyperLink:(NSString *)linktext
+                                                    toURL:(NSURL *)linkURL
+                                                linkColor:(NSColor *)linkColor;
+
+- (NSAttributedString *)htf_replaceSubstring:(NSString *)linkKey
+                               withHyperLink:(NSString *)linktext
+                                       toURL:(NSURL *)linkURL
+                                   linkColor:(NSColor *)linkColor;
+@end
+

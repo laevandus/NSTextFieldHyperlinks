@@ -33,5 +33,6 @@
 
 @property (assign) IBOutlet NSWindow *window;
 @property (weak) IBOutlet HyperlinkTextField *hyperlinkTextField;
-
+@property (weak) IBOutlet HyperlinkTextField *hyperlinkTextField2;
+@property (weak) IBOutlet HyperlinkTextField *hyperlinkTextField3;
 @end

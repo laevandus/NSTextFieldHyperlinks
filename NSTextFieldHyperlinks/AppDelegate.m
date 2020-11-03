@@ -37,17 +37,21 @@
     // Create hyperlink
     NSString *linkName = @"blog";
     NSURL *url = [NSURL URLWithString:@"http://toomasvahter.wordpress.com"];
-    NSMutableAttributedString *hyperlinkString = [[NSMutableAttributedString alloc] initWithString:linkName];
-    [hyperlinkString beginEditing];
-    [hyperlinkString addAttribute:NSLinkAttributeName value:url range:NSMakeRange(0, [hyperlinkString length])];
-    [hyperlinkString addAttribute:NSForegroundColorAttributeName value:[NSColor blueColor] range:NSMakeRange(0, [hyperlinkString length])];
-    [hyperlinkString endEditing];
+    NSAttributedString *hyperlinkString = [self.hyperlinkTextField hyperlink:linkName toURL:url];
     [resultString appendAttributedString:hyperlinkString];
     
     NSString *plainString = @". Some pretty interesting posts.";
     [resultString appendAttributedString:[[NSAttributedString alloc] initWithString:plainString]];
     
     [self.hyperlinkTextField setAttributedStringValue:resultString];
+    
+    // Update existing textfield substring with hyperlink
+    self.hyperlinkTextField2.linkColor = [NSColor redColor];
+    [self.hyperlinkTextField2 updateSubstring:@"blog" withHyperLinkToURL:url];
+    
+    // Replace existing textfield content key with hyperlink
+    self.hyperlinkTextField3.linkColor = [NSColor greenColor];
+    [self.hyperlinkTextField3 replaceSubstring:@"$key" withHyperLink:@"blog" toURL:url];
 }
 
 @end
